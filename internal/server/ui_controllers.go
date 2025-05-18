@@ -4,8 +4,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/chiragsoni81245/net-sentinel/internal/types"
+	"github.com/chiragsoni81245/net-sentinel/internal/utils"
 )
 
 type UIControllers struct {
@@ -26,4 +28,35 @@ func (uc *UIControllers) Dashboard(w http.ResponseWriter, r *http.Request) {
         return
     }
     tmpl.ExecuteTemplate(w, "index.html", nil)
+}
+
+func (uc *UIControllers) Login(w http.ResponseWriter, r *http.Request) {
+    if r.Context().Value("userId") != nil {
+        http.Redirect(w, r, "/", 302)
+        return
+    }
+    tmpl, err := template.ParseFiles("internal/server/templates/login.html")
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusInternalServerError)
+        log.Println(err)
+        return
+    }
+    toasts := utils.ParseToasts(w, r)
+    var payload struct {
+        Toasts []types.Toast
+    }
+    payload.Toasts = *toasts
+    tmpl.ExecuteTemplate(w, "login.html", payload)
+}
+
+func (uc *UIControllers) Logout(w http.ResponseWriter, r *http.Request) {
+    if r.Context().Value("userId") != nil {
+        http.SetCookie(w, &http.Cookie{
+            Name: "token",
+            Value: "",
+            Expires: time.Now(),
+        })
+        http.Redirect(w, r, "/login", 302)
+        return
+    }
 }

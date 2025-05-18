@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/chiragsoni81245/net-sentinel/internal/types"
+	"github.com/chiragsoni81245/net-sentinel/internal/utils"
 )
 
 func NewRouter(server *types.Server) *http.ServeMux {
@@ -13,12 +14,16 @@ func NewRouter(server *types.Server) *http.ServeMux {
 
     middleware := Middleware{Server: server}
 
-	// UI Routes
 	ui := UIControllers{Server: server}
-    {
-        mux.HandleFunc("/", middleware.AuthMiddleware(ui.Dashboard))
-        mux.HandleFunc("/login", ui.Login)
-    }
+    api := APIControllers{Server: server}
+    
+    mux.HandleFunc("/", middleware.ProtectedRoute(ui.Dashboard))
+
+    loginMethodHandler := utils.NewMethodHandler()
+    loginMethodHandler.Get(ui.Login)
+    loginMethodHandler.Post(api.Login)
+    mux.HandleFunc("/login", middleware.PublicRoute(loginMethodHandler.Handler))
+    mux.HandleFunc("/logout", middleware.ProtectedRoute(ui.Logout))
 
 
 	// Web Socket Route

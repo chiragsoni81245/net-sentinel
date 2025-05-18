@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Net Sentinel | Login</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="/static/css/common.css"/>
+        <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="/static/css/login.css"/>
+    </head>
+
+    <body class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+        <!-- Initial toasts -->
+        {{ range .Toasts }}
+        <input type="hidden" class="initial-toast" data-type="{{ .Type }}" data-text="{{ .Text }}" />
+        {{ end }}
+
+        <h2 class="font-bold text-center text-grey-800 text-2xl my-5">Net Sentinel</h2> 
+
+        <form action="/login" method="POST" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm space-y-6">
+            <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>
+
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input
+                type="text"
+                name="username"
+                id="username"
+                required
+                class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input
+                type="password"
+                name="password"
+                id="password"
+                required
+                class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition duration-200"
+                >
+                Log In
+            </button>
+        </form>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed bottom-4 right-4 space-y-4 z-50"></div>
+
+        <script src="/static/js/common.js"></script>
+        <script src="/static/js/login.js"></script>
+    </body>
+</html>
+

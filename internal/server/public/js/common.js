@@ -1,35 +1,4 @@
 const BASE_API_URL = "/api/v1";
-const subscriptions = {};
-
-async function subscribe(eventDescriptor, onmessage) {
-    subscriptions[eventDescriptor] = onmessage;
-    // Call websocket for this subscription
-    window.socket.send(
-        JSON.stringify({
-            action: "subscribe",
-            event: eventDescriptor,
-        })
-    );
-}
-
-async function onmessage(e) {
-    let message;
-    try {
-        message = JSON.parse(e.data);
-    } catch {
-        console.log("invalid message from socket", message);
-        return;
-    }
-    subscriptions[message["eventDescriptor"]](message);
-}
-
-async function main() {
-    // Connect to the WebSocket server
-    window.socket = new WebSocket(`ws://${window.location.host}/ws`);
-    window.socket.onmessage = onmessage;
-}
-
-main();
 
 const getTemplateToElement = (tmpl) => {
     const tmplElement = document.createElement("template");
@@ -78,56 +47,6 @@ function showToast(message, type = "success") {
     }, 3000);
 }
 
-class Queue {
-    constructor() {
-        this.items = {}; // Use an object for storage
-        this.front = 0; // Tracks the index of the front element
-        this.rear = 0; // Tracks the index of the next available position
-    }
-
-    // Add an element to the end of the queue
-    enqueue(element) {
-        this.items[this.rear] = element;
-        this.rear++;
-    }
-
-    // Remove and return the element at the front of the queue
-    dequeue() {
-        if (this.isEmpty()) {
-            return "Queue is empty";
-        }
-        const element = this.items[this.front];
-        delete this.items[this.front]; // Remove the element
-        this.front++; // Move the front pointer
-        return element;
-    }
-
-    // Return the element at the front without removing it
-    peek() {
-        if (this.isEmpty()) {
-            return "Queue is empty";
-        }
-        return this.items[this.front];
-    }
-
-    // Check if the queue is empty
-    isEmpty() {
-        return this.front === this.rear;
-    }
-
-    // Return the size of the queue
-    size() {
-        return this.rear - this.front;
-    }
-
-    // Clear the queue
-    clear() {
-        this.items = {};
-        this.front = 0;
-        this.rear = 0;
-    }
-}
-
 function capitalize(str) {
     if (!str) return ""; // Handle empty or null strings
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -137,3 +56,15 @@ async function getFileContent(url) {
     let res = await fetch(url);
     return await res.text();
 }
+
+async function showInitialToast() {
+    for (let toast of document.querySelectorAll("input.initial-toast")) {
+        showToast(toast.dataset.text, toast.dataset.type);
+    }
+}
+
+async function main() {
+    showInitialToast();
+}
+
+main();

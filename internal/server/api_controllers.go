@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"strings"
@@ -20,32 +21,71 @@ func (apiC *APIControllers) Login(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Unsupported method", http.StatusNotFound)
         return
     }
-
+    if r.Context().Value("userId") != nil {
+        http.Redirect(w, r, "/", 302)
+        return
+    }
 
     err := r.ParseForm()
     if err != nil {
         log.Println(err)
-        http.Error(w, "Invalid data", http.StatusBadRequest)
+        utils.SendJSON(w, `{"error": "Invalid data"}`, http.StatusBadRequest)
+        return
     }
 
     username := r.FormValue("username")
     password := r.FormValue("password")
+
 
     var user struct {
         id int
         password string
     };
     row := apiC.Server.DB.QueryRow(`SELECT id, password FROM user WHERE username=$1`, username)
-    err = row.Scan(&user)
+    err = row.Scan(&user.id, &user.password)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            utils.SetToasts(w, &[]types.Toast{
+                types.Toast{
+                    Type: "error",
+                    Text: "Invalid Credentials",
+                },
+            })
+            http.Redirect(w, r, "/login", 302)
+            return
+        }
+        log.Println(err)
+        utils.SetToasts(w, &[]types.Toast{
+            types.Toast{
+                Type: "error",
+                Text: "Something went wrong",
+            },
+        })
+        http.Redirect(w, r, "/login", 302)
+        return
+    }
     
     if user.password != password {
-        http.Error(w, "Unauthorized user", http.StatusUnauthorized)
+        utils.SetToasts(w, &[]types.Toast{
+            types.Toast{
+                Type: "error",
+                Text: "Invalid Credentials",
+            },
+        })
+        http.Redirect(w, r, "/login", 302)
     }
 
     token, err  := utils.GenerateJWTToken(user.id, apiC.Server.Config)
     if err != nil {
         log.Println(err)
-        http.Error(w, "Something went wrong", http.StatusInternalServerError)
+        utils.SetToasts(w, &[]types.Toast{
+            types.Toast{
+                Type: "error",
+                Text: "Something went wrong",
+            },
+        })
+        http.Redirect(w, r, "/login", 302)
+        return
     }
 
     http.SetCookie(w, &http.Cookie{
