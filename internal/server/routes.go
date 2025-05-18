@@ -11,10 +11,13 @@ func NewRouter(server *types.Server) *http.ServeMux {
     fileServer := http.FileServer(http.Dir("internal/server/public"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
+    middleware := Middleware{Server: server}
+
 	// UI Routes
 	ui := UIControllers{Server: server}
     {
-        mux.HandleFunc("/", ui.Dashboard)
+        mux.HandleFunc("/", middleware.AuthMiddleware(ui.Dashboard))
+        mux.HandleFunc("/login", ui.Login)
     }
 
 

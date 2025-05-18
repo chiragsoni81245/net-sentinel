@@ -10,8 +10,10 @@ type Config struct {
         Name string `mapstructure:"name"`
     }
     Server struct {
-        Port           int    `mapstructure:"port"`
-        MigrationsPath string `mapstructure:"migrations_path"`
+        Port            int    `mapstructure:"port"`
+        MigrationsPath  string `mapstructure:"migrations_path"`
+        Secret          string `mapstructure:"secret"`
+        TokenExpiration int `mapstructure:"token_expiration_hours"`
     } `mapstructure:"server"`
 }
 
