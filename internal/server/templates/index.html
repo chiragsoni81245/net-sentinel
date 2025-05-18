@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Net Sentinel</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="/static/css/common.css"/>
+        <link rel="stylesheet" href="/static/css/index.css"/>
+    </head>
+    <body class="font-sans">
+
+        <!-- Navbar -->
+        <nav class="p-4">
+            <div class="flex justify-between items-center mx-2">
+                <a href="/" class="text-white text-2xl font-semibold">Net Sentinel</a>
+                <div class="space-x-4">
+                    <a href="/" class="text-white font-bold hover:text-gray-200">Conversations</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto mt-10">
+            <h2 class="text-xl font-semibold mb-4">Welcome to Net Sentinel</h2>
+            <p>this is a monitoring tool, which you can use to monitor network traffic</p>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed bottom-4 right-4 space-y-4 z-50"></div>
+
+        <script src="/static/js/common.js"></script>
+        <script src="/static/js/index.js"></script>
+    </body>
+</html>
+
