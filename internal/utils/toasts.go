@@ -12,7 +12,11 @@ import (
 func SetToasts(w http.ResponseWriter, toasts *[]types.Toast) {
     toastsString := ""
     for _, toast := range *toasts {
-        toastsString = fmt.Sprintf("%s,%s=%s", toastsString, toast.Type, toast.Text)
+        if toastsString == "" {
+            toastsString = fmt.Sprintf("%s=%s", toast.Type, toast.Text)
+        } else {
+            toastsString = fmt.Sprintf("%s,%s=%s", toastsString, toast.Type, toast.Text)
+        }
     }
 
     http.SetCookie(w, &http.Cookie{

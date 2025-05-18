@@ -21,8 +21,6 @@ func runServer(configPath string) {
     }
 }
 
-var configPath string
-
 var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start the net sentinel service",

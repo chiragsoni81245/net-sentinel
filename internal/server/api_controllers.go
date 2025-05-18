@@ -41,49 +41,39 @@ func (apiC *APIControllers) Login(w http.ResponseWriter, r *http.Request) {
         id int
         password string
     };
+
+    invalidCredentialsToast := types.Toast{
+        Type: "error",
+        Text: "Invalid Credentials",
+    }
+    somethingWentWrongToast := types.Toast{
+        Type: "error",
+        Text: "Something went wrong",
+    }
+
     row := apiC.Server.DB.QueryRow(`SELECT id, password FROM user WHERE username=$1`, username)
     err = row.Scan(&user.id, &user.password)
     if err != nil {
         if err == sql.ErrNoRows {
-            utils.SetToasts(w, &[]types.Toast{
-                types.Toast{
-                    Type: "error",
-                    Text: "Invalid Credentials",
-                },
-            })
+            utils.SetToasts(w, &[]types.Toast{invalidCredentialsToast})
             http.Redirect(w, r, "/login", 302)
             return
         }
         log.Println(err)
-        utils.SetToasts(w, &[]types.Toast{
-            types.Toast{
-                Type: "error",
-                Text: "Something went wrong",
-            },
-        })
+        utils.SetToasts(w, &[]types.Toast{somethingWentWrongToast})
         http.Redirect(w, r, "/login", 302)
         return
     }
     
     if user.password != password {
-        utils.SetToasts(w, &[]types.Toast{
-            types.Toast{
-                Type: "error",
-                Text: "Invalid Credentials",
-            },
-        })
+        utils.SetToasts(w, &[]types.Toast{invalidCredentialsToast})
         http.Redirect(w, r, "/login", 302)
     }
 
     token, err  := utils.GenerateJWTToken(user.id, apiC.Server.Config)
     if err != nil {
         log.Println(err)
-        utils.SetToasts(w, &[]types.Toast{
-            types.Toast{
-                Type: "error",
-                Text: "Something went wrong",
-            },
-        })
+        utils.SetToasts(w, &[]types.Toast{somethingWentWrongToast})
         http.Redirect(w, r, "/login", 302)
         return
     }

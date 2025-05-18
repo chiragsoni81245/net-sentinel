@@ -13,6 +13,8 @@ var rootCmd = &cobra.Command{
 	Long: "Net Sentinel CLI an network traffic monitoring tool",
 }
 
+var configPath string
+
 // Execute runs the root command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
