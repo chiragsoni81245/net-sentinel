@@ -18,12 +18,17 @@ func NewRouter(server *types.Server) *http.ServeMux {
     api := APIControllers{Server: server}
     
     mux.HandleFunc("/", middleware.ProtectedRoute(ui.Dashboard))
+    mux.HandleFunc("/error", middleware.PublicRoute(ui.Error))
 
     loginMethodHandler := utils.NewMethodHandler()
     loginMethodHandler.Get(ui.Login)
     loginMethodHandler.Post(api.Login)
     mux.HandleFunc("/login", middleware.PublicRoute(loginMethodHandler.Handler))
     mux.HandleFunc("/logout", middleware.ProtectedRoute(ui.Logout))
+
+    devicesMethodHandler := utils.NewMethodHandler()
+    devicesMethodHandler.Get(ui.Devices)
+    mux.HandleFunc("/devices", middleware.PublicRoute(devicesMethodHandler.Handler))
 
 
 	// Web Socket Route

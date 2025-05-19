@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/chiragsoni81245/net-sentinel/internal/packets"
 	"github.com/chiragsoni81245/net-sentinel/internal/types"
 	"github.com/chiragsoni81245/net-sentinel/internal/utils"
 )
@@ -23,11 +24,21 @@ type HTTPError struct {
 func (uc *UIControllers) Dashboard(w http.ResponseWriter, r *http.Request) {
     tmpl, err := template.ParseFiles("internal/server/templates/index.html")
     if err != nil {
-        http.Error(w, "Something went wrong", http.StatusInternalServerError)
+        http.Redirect(w, r, "/error", 302)
         log.Println(err)
         return
     }
     tmpl.ExecuteTemplate(w, "index.html", nil)
+}
+
+func (uc *UIControllers) Error(w http.ResponseWriter, r *http.Request) {
+    tmpl, err := template.ParseFiles("internal/server/templates/error.html")
+    if err != nil {
+        http.Redirect(w, r, "/error", 302)
+        log.Println(err)
+        return
+    }
+    tmpl.ExecuteTemplate(w, "error.html", nil)
 }
 
 func (uc *UIControllers) Login(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +48,7 @@ func (uc *UIControllers) Login(w http.ResponseWriter, r *http.Request) {
     }
     tmpl, err := template.ParseFiles("internal/server/templates/login.html")
     if err != nil {
-        http.Error(w, "Something went wrong", http.StatusInternalServerError)
+        http.Redirect(w, r, "/error", 302)
         log.Println(err)
         return
     }
@@ -59,4 +70,22 @@ func (uc *UIControllers) Logout(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/login", 302)
         return
     }
+}
+
+func (uc *UIControllers) Devices(w http.ResponseWriter, r *http.Request) {
+    tmpl, err := template.ParseFiles("internal/server/templates/devices.html")
+    if err != nil {
+        http.Redirect(w, r, "/error", 302)
+        log.Println(err)
+        return
+    }
+
+    
+    devices, err := packets.GetAllDevices()
+    if err != nil {
+        http.Redirect(w, r, "/error", 302)
+        log.Println(err)
+    }
+
+    tmpl.ExecuteTemplate(w, "devices.html", devices)
 }

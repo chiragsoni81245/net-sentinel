@@ -7,7 +7,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="/static/css/common.css"/>
         <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
-        <link rel="stylesheet" href="/static/css/index.css"/>
+        <link rel="stylesheet" href="/static/css/devices.css"/>
     </head>
     <body class="font-sans">
 
@@ -24,9 +24,18 @@
         </nav>
 
         <!-- Main Content -->
-        <div class="container mx-auto mt-10">
-            <h2 class="text-xl font-semibold mb-4">Welcome to Net Sentinel</h2>
-            <p>this is a monitoring tool, which you can use to monitor network traffic</p>
+        <div class="container mx-auto mt-10 text-center">
+            <h2 class="text-xl font-semibold mb-4">Devices</h2>
+            <div class="max-w-2xl mx-auto space-y-4">
+                {{ range . }}
+                <a href="/devices/{{ .Name }}" class="block bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-xl font-semibold text-gray-800">{{ .Name }}</div>
+                    <div class="text-gray-600 mt-1">{{ .Description }}</div>
+                    {{ range .Addresses }}
+                    <div class="text-sm text-gray-500 mt-2">{{ .IP }} / {{ .Netmask }}</div>
+                    {{ end }}
+                </a>
+                {{ end }}
         </div>
 
         <!-- Toast Container -->
@@ -34,7 +43,7 @@
 
         <script src="/static/js/common.js"></script>
         <script src="/static/js/socket.js"></script>
-        <script src="/static/js/index.js"></script>
+        <script src="/static/js/devices.js"></script>
     </body>
 </html>
 
